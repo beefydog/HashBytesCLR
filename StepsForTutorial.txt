@@ -1,0 +1,56 @@
+create SQL CLR project -- detailed steps
+create class library -- detailed steps
+generate signing key .snk
+build everything
+download ilrepack
+set the path variable
+open dev powershell
+go to bin\release\ folder
+run ilrepack
+	ilrepack /out:hashbytes1.dll hashbytes.dll bouncycastle.cryptography.dll
+generate a SHA512 hash from hashbytes1.dll (use HashMaster) and save it somewhere
+copy file to SQL Server folder (set permissions)
+Enable CLR
+	sp_configure 'clr enabled', 1;
+	RECONFIGURE;
+Add the Trusted Assembly using the computed hash:
+	USE master;
+	GO
+
+	DECLARE @HashBytesLibraryHash VARBINARY(64);
+
+	-- Replace [your_hash_here] with the actual SHA512 hash value for HashBytesMerged.dll
+	SET @HashBytesLibraryHash = CONVERT(VARBINARY(64), 0x[your_hash_here]);
+
+	-- Add the trusted assembly for HashBytesLibrary
+	EXEC sp_add_trusted_assembly @hash = @HashBytesLibraryHash, @description = N'HashBytesLibrary';
+	GO
+
+Create an Assembly:
+	USE Test;
+	GO
+
+	-- Create the assembly with UNSAFE permission
+	CREATE ASSEMBLY HashBytesLibrary
+	FROM 'E:\DBCLR\xhashbytes\HashBytes1.dll'
+	WITH PERMISSION_SET = UNSAFE;
+	GO
+
+	CREATE FUNCTION dbo.XHASHBYTES (@algorithm NVARCHAR(50), @input VARBINARY(MAX))
+	RETURNS VARBINARY(MAX)
+	AS EXTERNAL NAME HashBytesLibrary.XHASHBYTES.ComputeHash;
+	GO
+	
+Test Examples:
+
+	-- Example of hashing a string using SHA-256
+	SELECT dbo.XHASHBYTES('SHA-256', CAST('Test input' AS VARBINARY(MAX))) AS SHA256Hash;
+
+	-- Example of hashing a string using MD5
+	SELECT dbo.XHASHBYTES('MD5', CAST('Test input' AS VARBINARY(MAX))) AS MD5Hash;
+
+	-- Example of hashing a string using SHA-512
+	SELECT dbo.XHASHBYTES('SHA-512', CAST('Test input' AS VARBINARY(MAX))) AS SHA512Hash;
+
+	-- Example of hashing a string using SHA3-256
+	SELECT dbo.XHASHBYTES('SHA3-256', CAST('Test input' AS VARBINARY(MAX))) AS SHA3_256Hash;
