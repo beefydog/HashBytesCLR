@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("HashBytes")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("For SQL CLR tutorial series")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Infinibit Inc")]
 [assembly: AssemblyProduct("HashBytes")]

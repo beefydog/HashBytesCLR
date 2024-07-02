@@ -21,46 +21,51 @@ public class XHASHBYTES
         switch (algorithm.Value.ToUpper())
         {
             case "MD2":
-                hashBytes = ComputeBouncyCastleHash(new MD2Digest(), inputData);
+                hashBytes = ComputeBCHash(new MD2Digest(), inputData);
                 break;
             case "MD4":
-                hashBytes = ComputeBouncyCastleHash(new MD4Digest(), inputData);
+                hashBytes = ComputeBCHash(new MD4Digest(), inputData);
                 break;
             case "MD5":
-                hashBytes = MD5.Create().ComputeHash(inputData);
+                //hashBytes = MD5.Create().ComputeHash(inputData);
+                hashBytes = ComputeBCHash(new MD5Digest(), inputData);
                 break;
             case "SHA-1":
-                hashBytes = SHA1.Create().ComputeHash(inputData);
+               // hashBytes = SHA1.Create().ComputeHash(inputData);
+                hashBytes = ComputeBCHash(new Sha1Digest(), inputData);
                 break;
             case "SHA-224":
-                hashBytes = ComputeBouncyCastleHash(new Sha224Digest(), inputData);
+                hashBytes = ComputeBCHash(new Sha224Digest(), inputData);
                 break;
             case "SHA-256":
-                hashBytes = SHA256.Create().ComputeHash(inputData);
+               // hashBytes = SHA256.Create().ComputeHash(inputData);
+               hashBytes = ComputeBCHash(new Sha256Digest(), inputData);
                 break;
             case "SHA-384":
-                hashBytes = SHA384.Create().ComputeHash(inputData);
+                // hashBytes = SHA384.Create().ComputeHash(inputData);
+                hashBytes = ComputeBCHash(new Sha384Digest(), inputData);
                 break;
             case "SHA-512":
-                hashBytes = SHA512.Create().ComputeHash(inputData);
+                //  hashBytes = SHA512.Create().ComputeHash(inputData);
+                hashBytes = ComputeBCHash(new Sha512Digest(), inputData);
                 break;
             case "SHA-512/224":
-                hashBytes = ComputeBouncyCastleHash(new Sha512tDigest(224), inputData);
+                hashBytes = ComputeBCHash(new Sha512tDigest(224), inputData);
                 break;
             case "SHA-512/256":
-                hashBytes = ComputeBouncyCastleHash(new Sha512tDigest(256), inputData);
+                hashBytes = ComputeBCHash(new Sha512tDigest(256), inputData);
                 break;
             case "SHA3-224":
-                hashBytes = ComputeBouncyCastleHash(new Sha3Digest(224), inputData);
+                hashBytes = ComputeBCHash(new Sha3Digest(224), inputData);
                 break;
             case "SHA3-256":
-                hashBytes = ComputeBouncyCastleHash(new Sha3Digest(256), inputData);
+                hashBytes = ComputeBCHash(new Sha3Digest(256), inputData);
                 break;
             case "SHA3-384":
-                hashBytes = ComputeBouncyCastleHash(new Sha3Digest(384), inputData);
+                hashBytes = ComputeBCHash(new Sha3Digest(384), inputData);
                 break;
             case "SHA3-512":
-                hashBytes = ComputeBouncyCastleHash(new Sha3Digest(512), inputData);
+                hashBytes = ComputeBCHash(new Sha3Digest(512), inputData);
                 break;
             default:
                 throw new ArgumentException("Available algorithms: MD2,MD4,MD5,SHA-1,SHA-224,SHA-256,SHA-384,SHA-512,SHA-512/224,SHA-512/256,SHA3-224,SHA3-256,SHA3-384,SHA3-512");
@@ -69,7 +74,7 @@ public class XHASHBYTES
         return new SqlBinary(hashBytes);
     }
 
-    private static byte[] ComputeBouncyCastleHash(IDigest digest, byte[] input)
+    private static byte[] ComputeBCHash(IDigest digest, byte[] input)
     {
         digest.BlockUpdate(input, 0, input.Length);
         byte[] result = new byte[digest.GetDigestSize()];
